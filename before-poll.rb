@@ -5,19 +5,33 @@
 
 @last_fetch = nil unless defined?(@last_fetch)
 
-class OfflineIMAP
-  def self.offlineimap(*folders)
-    cmd = "offlineimap 2>&1"
-    #cmd << " -f #{folders * ','}" unless folders.compact.empty?
-    `#{cmd}`
-  end
+require 'thread'
 
-  def self.folder_names(sources)
-    sources.map { |s| s.uri.split('/').last }
-  end
+if not defined?(OfflineIMAP)
+  class OfflineIMAP
+    @run_off = Mutex.new
 
-  def self.inbox_sources(sources = Redwood::SourceManager.sources)
-    sources.find_all { |s| !s.archived? }.sort_by {|s| s.id }
+    def self.offlineimap(*folders)
+      if @run_off.try_lock
+        begin
+          cmd = "offlineimap 2>&1"
+          #cmd << " -f #{folders * ','}" unless folders.compact.empty?
+          `#{cmd}`
+        ensure
+          @run_off.unlock
+        end
+      else
+        debug "Previous OfflineIMAP operation still running.."
+      end
+    end
+
+    def self.folder_names(sources)
+      sources.map { |s| s.uri.split('/').last }
+    end
+
+    def self.inbox_sources(sources = Redwood::SourceManager.sources)
+      sources.find_all { |s| !s.archived? }.sort_by {|s| s.id }
+    end
   end
 end
 

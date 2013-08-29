@@ -14,7 +14,7 @@ if not defined?(OfflineIMAP)
     def self.offlineimap(*folders)
       if @run_off.try_lock
         begin
-          cmd = "offlineimap -q 2>&1"
+          cmd = "offlineimap 2>&1"
           #cmd << " -f #{folders * ','}" unless folders.compact.empty?
           `#{cmd}`
         ensure

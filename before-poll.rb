@@ -4,6 +4,7 @@
 # constants and methods.
 
 @last_fetch = nil unless defined?(@last_fetch)
+@poll_interval = 50 unless defined?(@poll_interval)
 
 require 'thread'
 
@@ -21,7 +22,7 @@ if not defined?(OfflineIMAP)
           @run_off.unlock
         end
       else
-        debug "Previous OfflineIMAP operation still running.."
+        log "Previous OfflineIMAP operation still running.."
       end
     end
 
@@ -35,7 +36,7 @@ if not defined?(OfflineIMAP)
   end
 end
 
-if (@last_fetch || Time.at(0)) < Time.now - 20
+if (@last_fetch || Time.at(0)) < Time.now - @poll_interval
   say "Running offlineimap..."
   # only check non-auto-archived sources on the first run
 

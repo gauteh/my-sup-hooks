@@ -2,11 +2,11 @@
 
 notify_cmd="/usr/bin/notify-send -i /usr/share/icons/gnome/24x24/status/stock_mail-unread.png "
 
-if num >= 1
+if num_inbox_total >= 1
   notify_summary="Jei! Meil! "
 
-  notify_body = "#{num} "
-  if num > 1
+  notify_body = "#{num_inbox_total} "
+  if num_inbox_total > 1
     notify_body << "nye meila!"
   else
     notify_body << "ny meil!"

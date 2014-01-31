@@ -4,7 +4,7 @@
 # constants and methods.
 
 @last_fetch = nil unless defined?(@last_fetch)
-@poll_interval = 50 unless defined?(@poll_interval)
+@poll_interval = 120 unless defined?(@poll_interval)
 
 require 'thread'
 
@@ -15,6 +15,7 @@ if not defined?(OfflineIMAP)
     def self.offlineimap(*folders)
       if @run_off.try_lock
         begin
+          #cmd = "sync_new_email 2>&1"
           cmd = "offlineimap 2>&1"
           #cmd << " -f #{folders * ','}" unless folders.compact.empty?
           `#{cmd}`
@@ -37,12 +38,12 @@ if not defined?(OfflineIMAP)
 end
 
 if (@last_fetch || Time.at(0)) < Time.now - @poll_interval
-  say "Running offlineimap..."
+  say "offlineimap: running.."
   # only check non-auto-archived sources on the first run
 
   log OfflineIMAP::offlineimap(@last_fetch ? nil : OfflineIMAP::folder_names(OfflineIMAP::inbox_sources))
 
-  say "Finished offlineimap."
+  say "offlineimap: done."
 end
 
 @last_fetch = Time.now
